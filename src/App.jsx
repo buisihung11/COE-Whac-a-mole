@@ -7,6 +7,8 @@ import rabbit from "./assets/rabbit.png";
 function App() {
   const [moles, setMoles] = useState(Array(9).fill("hole"));
   const [score, setScore] = useState(0);
+  const [isStarted, setIsStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   const popMole = (index) => {
     setMoles((curMoles) => {
@@ -29,14 +31,23 @@ function App() {
     if (moles[index] === "hole") return;
     if (moles[index] === "rabbit") {
       setScore((score) => score - 1);
-    } else if(moles[index] === "mole") {
+    } else if (moles[index] === "mole") {
       setScore((score) => score + 1);
     }
     hideMole(index);
   };
 
+  const startGame = () => {
+    setIsStarted(true);
+    setTimeLeft(30);
+    setScore(0);
+  };
+
   useEffect(() => {
-    const interval = setInterval(() => {
+    let interval, countDown;
+    if (!isStarted) return;
+
+    interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * moles.length);
       popMole(randomIndex);
       setTimeout(() => {
@@ -44,19 +55,33 @@ function App() {
       }, 1000);
     }, 1500);
 
+    countDown = setInterval(() => {
+      setTimeLeft((timeLeft) => timeLeft - 1);
+    }, 1000);
+
+    setTimeout(() => {
+      setIsStarted(false);
+      clearInterval(interval);
+      clearInterval(countDown);
+      setTimeLeft(0);
+    }, 30000);
+
     return () => {
       clearInterval(interval);
+      clearInterval(countDown);
       clearTimeout();
     };
-  }, [moles]);
+  }, [moles, isStarted]);
 
   return (
     <>
       <div className="game-header">
         <h1>Whac-a-mole game</h1>
         <div className="score">Score: {score}</div>
-        <div className="time-left">Time left: 30s</div>
-        <button>Start game</button>
+        <div className="time-left">Time left: {timeLeft}s</div>
+        <button onClick={startGame} disabled={isStarted}>
+          Start game
+        </button>
       </div>
       <div className="game-container">
         <div className="game-area">
