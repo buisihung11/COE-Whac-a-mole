@@ -68,7 +68,9 @@ function App() {
     <>
       <div className="game-header">
         <h1>Whac-a-mole game</h1>
-        <div className="score">Score: {score}</div>
+        <div className="score">Score: 
+        <span id="game-score">{score}</span>
+        </div>
         <div className="time-left">Time left: {timeLeft}s</div>
         <button onClick={startGame} disabled={isStarted}>
           Start game
