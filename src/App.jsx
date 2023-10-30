@@ -3,12 +3,17 @@ import { useState, useEffect } from "react";
 import hole from "./assets/hole.png";
 import mole from "./assets/mole.png";
 import rabbit from "./assets/rabbit.png";
+import React from "react";
+import useCountdown from "./hooks/useCountDown";
 
 function App() {
   const [moles, setMoles] = useState(Array(9).fill("hole"));
   const [score, setScore] = useState(0);
-  const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
+  const {
+    seconds: timeLeft,
+    isActive: isStarted,
+    startCountdown,
+  } = useCountdown(30);
 
   const popMole = (index) => {
     setMoles((curMoles) => {
@@ -38,13 +43,12 @@ function App() {
   };
 
   const startGame = () => {
-    setIsStarted(true);
-    setTimeLeft(30);
+    startCountdown();
     setScore(0);
   };
 
   useEffect(() => {
-    let interval, countDown;
+    let interval;
     if (!isStarted) return;
 
     interval = setInterval(() => {
@@ -55,21 +59,8 @@ function App() {
       }, 1000);
     }, 1500);
 
-    countDown = setInterval(() => {
-      setTimeLeft((timeLeft) => timeLeft - 1);
-    }, 1000);
-
-    setTimeout(() => {
-      setIsStarted(false);
-      clearInterval(interval);
-      clearInterval(countDown);
-      setTimeLeft(0);
-    }, 30000);
-
     return () => {
       clearInterval(interval);
-      clearInterval(countDown);
-      clearTimeout();
     };
   }, [moles, isStarted]);
 
@@ -91,6 +82,7 @@ function App() {
               key={index}
               src={type === "hole" ? hole : type === "mole" ? mole : rabbit}
               className="mole"
+              data-testid={type}
             />
           ))}
         </div>
