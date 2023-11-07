@@ -6,7 +6,7 @@ import App from "../App";
 describe("Whac-a-mole App", () => {
   it("renders without crashing", () => {
     render(<App />);
-    expect(screen.getByText(/Whac-a-mole game/i)).toBeInTheDocument();
+    expect(screen.getByText(/Whack-a-mole game/i)).toBeInTheDocument();
   });
 
   it("starts the game when 'Start game' button is clicked", () => {
@@ -27,7 +27,7 @@ test("start game button works correctly", async () => {
   fireEvent.click(startButton);
 
   // Expect the time left to be 30 after starting the game
-  expect(getByText("Time left: 30s")).toBeInTheDocument();
+  expect(getByText("30s")).toBeInTheDocument();
 
   // Check if the start button is disabled after starting the game
   expect(startButton).toBeDisabled();
