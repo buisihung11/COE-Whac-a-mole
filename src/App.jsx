@@ -5,6 +5,7 @@ import mole from "./assets/mole.png";
 import rabbit from "./assets/rabbit.png";
 import React from "react";
 import useCountdown from "./hooks/useCountDown";
+import useSound from "use-sound";
 
 function App() {
   const [moles, setMoles] = useState(Array(9).fill("hole"));
@@ -14,6 +15,8 @@ function App() {
     isActive: isStarted,
     startCountdown,
   } = useCountdown(30);
+  const [whackSound] = useSound("/Whack.wav", { volume: 0.25 });
+  const [errorSound] = useSound("/error.wav", { volume: 0.5 });
 
   const popMole = (index) => {
     setMoles((curMoles) => {
@@ -33,10 +36,12 @@ function App() {
   };
 
   const hitMole = (index) => {
-    if (moles[index] === "hole") return;
+    if (moles[index] === "hole" || !isStarted) return;
     if (moles[index] === "rabbit") {
+      errorSound();
       setScore((score) => score - 1);
     } else if (moles[index] === "mole") {
+      whackSound();
       setScore((score) => score + 1);
     }
     hideMole(index);
@@ -67,14 +72,26 @@ function App() {
   return (
     <>
       <div className="game-header">
-        <h1>Whac-a-mole game</h1>
-        <div className="score">Score: 
-        <span id="game-score">{score}</span>
+        <h1>Whack-a-mole game</h1>
+        <div className="game-header-controller">
+          <button onClick={startGame} disabled={isStarted}>
+            Start game
+          </button>
+          <div className="game-header-information">
+            <div className="game-header-information-col game-header-information-score">
+              <h4>Score</h4>
+              <span className="game-header-information-val" id="game-score">
+                {score}
+              </span>
+            </div>
+            <div className="game-header-information-col game-header-information-countdown">
+              <h4>Time left</h4>
+              <span className="time-left game-header-information-val">
+                {timeLeft}s
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="time-left">Time left: {timeLeft}s</div>
-        <button onClick={startGame} disabled={isStarted}>
-          Start game
-        </button>
       </div>
       <div className="game-container">
         <div className="game-area">
